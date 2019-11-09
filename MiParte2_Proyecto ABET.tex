@@ -1,0 +1,124 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\begin{document}
+
+\begin{center}|
+{\Large \textbf{M\' etodos Num\' ericos que emplea MATLAB para la resoluci\' on de sistemas de ecuaciones diferenciales ordinarias}}\\
+\end{center}
+ 
+Para la resolución de sistemas de ecuaciones diferenciales ordinarias (EDO's) el entorno de Matlab emplea la familia de m\' etodos num\' ericos Runge-Kutta-Fehlberg, como Runge-Kutta de primer orden (Euler), Runge-Kutta de cuarto orden, Dormand–Prince , entre otros; los cuales son implementados por los diferentes solucionadores que posee, tales como ode45, ode12, ode113, entre otros. Sin embargo, el m\' etodo principal que emplea Matlab es Dormand–Prince, el cual es implementado por el solucionador estándar ode45, este  se basa en una fórmula explícita de Runge-Kutta (4,5), el par Dormand-Prince (i.e. que el m\' etodo tiene orden 5 y el m\' etodo incrustado tiene orden 4).(Bibliograf\' ia:[1] Dormand, J. R. and P. J. Prince, “A family of embedded Runge-Kutta formulae,” J. Comp. Appl. Math., Vol. 6, 1980, pp. 19–26.
+[2] Shampine, L. F. and M. W. Reichelt, “The MATLAB ODE Suite,” SIAM Journal on Scientific Computing, Vol. 18, 1997, pp. 1–22. [3]http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.619.551&rep=rep1&type=pdf)
+
+\begin{center}|
+{\Large \textbf{Existencia y unicidad de la soluci\' on del sistema de las ecuaciones de estado}}\\
+\end{center}
+En esta secci\' on se pasan a tratar dos conceptos clave en el estudio de sistemas din\' amicos, la controlabilidad y la observabilidad. El primero se refiere a la existencia de una secuencia de actuaciones para llevar el sistema a un estado arbitrario. Por otro lado, la observabilidad tiene que ver con la posibilidad de determinar el valor del vector de estados de un sistema a partir de observaciones de las salidas y la entradas de dicho sistema. Ambos conceptos se deben a Kalman y son claves en estrategias de control como la colocaci\' on de polos por realimentaci\' on del vector de estados o el control
+\' optimo.[Depto. de Ingenier\' ia de Sistemas y Autom\' atica APUNTES DE INGENIER\' IA DE CONTROL ANALISIS \'  Y CONTROL DE SISTEMAS EN ESPACIO DE ESTADO IDENTIFICACION\'  DE SISTEMAS CONTROL ADAPTATIVO CONTROL PREDICTIVO Daniel Rodr\' iguez Ram\' irez Carlos Bord\' ons Alba Rev. 5/05/2005]
+Aunque la mayor parte de los sistemas físicos son controlables y observables, los modelos matemáticos correspondientes tal vez no posean la propiedad de controlabilidad y observabilidad. En este caso, es necesario conocer las condiciones en
+las cuales un sistema es controlable y observable. Esta sección aborda la controlabilidad y la
+siguiente analiza la observabilidad.
+\begin{center}|
+{\Large \textbf{ Controlabilidad}}\\
+\end{center}
+La controlabilidad es una característica de un sistema, generalmente representado por un modelo en espacio de estado. Existen dos tipos de controlabilidad: Controlabilidad de estado y controlabilidad de salida. De aqu\' i en adelante el t\' ermino controlabilidad har\' a referencia a la controlabilidad de estado.
+Se dice que un sistema es controlable en el tiempo $t_{0}$ si se puede transferir desde cualquier estado inicial $x(t_{0})$ a cualquier otro estado, mediante un vector de control sin restricciones, en un intervalo de tiempo finito. Si todos los estados son controlables, se dice que el sistema es de estado completamente controlable.[OGATA]
+Cabe destacar que controlabilidad no significa que una vez alcanzado un estado es posible mantenerlo ahí, sino solamente que puede alcanzarse ese estado.\\Si un sistema no es completamente controlable entonces para algunas condiciones iniciales no existe ninguna entrada capaz de llevar el sistema al origen.\\La controlabilidad es una noción de suma importancia puesto que nos permite determinar si es posible controlar un sistema para modificar su comportamiento (estabilización de un sistema inestable, modificación de las dinámicas propias del sistema). Y es por ello que es fundamental en la teoría de la síntesis de controladores en espacio de estado.\\
+A continuaci\' on se pasa a definir formalmente el concepto de contrabilidad.
+
+Considera el sistema en tiempo continuo, lineal e invariante en el tiempo (\texbf{LIT})
+\begin{equation}\label{Sistem}
+x’=Ax+Bu 
+\end{equation}  donde
+\begin{itemize}
+\item $x \in R^{n}$ : vector de estados. 
+\item $u \in R^{m}$ : vector de entradas.
+ \item $A$ : matriz de estados de orden $ n\times n$. 
+\item $B$ : matriz de entradas de orden $ n\times m$.
+\end{itemize}
+\begin{center}
+{\Large \textbf{Definici\' on.}}\\
+\end{center}
+El par $(A,B)$ es controlable si, dado una duraci\' on $T \geq 0$ y dos puntos arbitrarios $x_{0} , x_{T}\in R^{n}$, existe una funci\' on continua a trozos $t\to \bar{u}(t)$ de $[0, T]$ a $R^{m}$, tal que la integral de la curva $\bar{x}(t)$ generado por $\bar{u}$ con $\bar{x}(0) = x_{0}$ , satisface $\bar{x}(T) = x_{T}$. En otras palabras $$e^{AT}x_{0}+\large\int_{0}^{T}e^{A(T-t)}B\bar{u}(t)=x_{T}$$ Esta propiedad solo depende de $A$ y $B$:
+\begin{center}
+{\Large \textbf{Teorema(Criterio de Kalman).}}\\
+\end{center}
+Una condici\' on necesaria y suficiente  par que $(A, B)$ sea controlable es $$rang\,\mathcal{C}=rang[B|AB|\cdots|A^{n-1}B]=n$$
+ $\mathcal{C}$ es llamado \textit{Matriz de controlabilidad de Kalman}(de orden $n\times nm$).\\
+{\Large \textbf{Observaciones:}}\\
+\end{center}
+\begin{enumerate}
+\item La condici\' on no involucra el tiempo, as\' i que si el sistema es controlable para alg\' un tiempo, lo ser\' a tambi\' en para todo tiempo $T \geq 0$.
+\item  Vemos que mientras mayor sea \textbf{m}, la matriz de Kalman tiene m\' as vectores columnas y as\' i es m\' as f\' acil encontrar \textbf{n} vectores columnas que sean
+linealmente independientes. Esto coincide con la intuici\' on que dir\' ia que mientras m\' as controles haya, m\' as posibilidades hay de controlar el sistema.
+\end{enumerate} 
+
+\begin{center}|
+{\Large \textbf{ Observabilidad}}\\
+\end{center}
+
+\begin{center}|
+{\Large \textbf{ Definici\' on.}}\\
+\end{center}
+Sea el sistema no forzado descrito mediante las ecuaciones siguientes:
+
+\begin{eqnarray}\label{sistem2}
+\dot{x} & = & Ax \nonumber\\
+y  & = & Cx 
+\end{eqnarray}
+donde
+\begin{itemize}
+\item \texbf{x} : vector de estado (vector de dimensión \texbf{n})
+\item \texbf{y} : vector de salida (vector de dimensión \texbf{m})
+\item \textbf{A} : matriz $n\times n$
+\textbf{C} : matriz $m\times n$
+\end{itemize}
+Se dice que el sistema es observable si el estado $x(t_{0})$ se determina a partir de la observación de $y(t)$ durante un intervalo de tiempo finito, $t_{0}\leq t \leq t_{1}$. Por tanto, el sistema es completamente observable si todas las transiciones del estado afectan eventualmente a todos los elementos del vector de salida.\\
+\begin{center}|
+{\Large \textbf{ Observaciones:}}\\
+\end{center}
+\begin{itemize}
+\item La observabilidad es una medición que determina c\' omo los estados internos pueden ser inferidos a trav\' es de las salidas externas.
+\item Cuando un sistema no es observable, quiere decir que los valores actuales de algunos de sus estados no pueden ser determinados mediante sensores de salida: esto implica que su valor es desconocido para el controlador y, consecuentemente, no será capaz de satisfacer las especificaciones de control referidas a estas salidas.
+\item Cuando un sistema no es observable, quiere decir que los valores actuales de algunos de sus estados no pueden ser determinados mediante sensores de salida: esto implica que su valor es desconocido para el controlador y, consecuentemente, no será capaz de satisfacer las especificaciones de control referidas a estas salidas.
+\item La controlabilidad y la observabilidad de un sistema son aspectos duales de un mismo problema.[Depto. de Ingenier´ia de Sistemas y Autom\' atica
+APUNTES DE INGENIER´IA DE CONTROL
+AN\' ALISIS Y CONTROL DE SISTEMAS EN ESPACIO DE ESTADO
+IDENTIFICACI\' ON DE SISTEMAS
+CONTROL ADAPTATIVO
+CONTROL PREDICTIVO
+Daniel Rodr\' iguez Ram\' irez
+Carlos Bord\' ons Alba
+Rev. 5/05/2005.pg.19]
+\end{itemize}
+\begin{center}|
+{\Large \textbf{Teorema}(Criterio de Observabilidad de Kalman).}\\
+\end{center}
+Un sistema \textbf{LIT} representado por el sistema (\ref{sistem2}) es observable si, y solo si, la matriz de observabilidad $\mathcal{O}$ tiene rango \texbf{n}: 
+\begin{center}
+\[
+rang(\mathcal{O})=\left[\begin{array}{c}
+C\\
+\cdots\\
+CA\\
+\cdot\\
+\vdots\\
+\cdot\\
+CA^{n-1}
+\end{array}\right]=n\]
+\end{center}
+\begin{center}|
+{\Large \textbf{Observaci\' on:}\\
+\end{center}
+\begin{itemize}
+\item Observabilidad gobierna la existencia de una soluci\' on de control \' optimo.
+\end{itemize}
+
+Seg\' un Kalman, las condiciones de controlabilidad y observabilidad determinan la existencia de una soluci\' on completa para un problema de diseño de un sistema de control. La soluci\' on a este problema puede no existir si el sistema considerado no es controlable.[INGENIERÍA DE CONTROL MODERNA
+Katsuhiko Ogata
+PEARSON EDUCACIÓN, S.A., Madrid, 2010.Ingeniería del control automático,pg.675-676] 
+
+
+\end{document}
